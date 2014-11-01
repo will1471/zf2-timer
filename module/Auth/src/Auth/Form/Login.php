@@ -8,12 +8,6 @@ class Login extends Form
 {
 
 
-    /**
-     * Class Constructor.
-     *
-     * @param  null|int|string  $name    Optional name for the element.
-     * @param  array            $options Optional options for the element.
-     */
     public function __construct($name = null, $options = array())
     {
         parent::__construct($name, $options);
@@ -21,7 +15,7 @@ class Login extends Form
         $this->setAttribute('method', 'post');
 
         $this->add(array(
-            'name' => 'username',
+            'name' => 'email',
             'type' => 'text',
             'options' => array(
                 'label' => 'Email Address'

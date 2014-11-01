@@ -11,6 +11,20 @@ class Module
     }
 
 
+    public function getServiceConfig()
+    {
+        return array(
+            'factories' => array(
+                'authentication-service' => function() {
+                    $auth = new \Zend\Authentication\AuthenticationService();
+                    $auth->setStorage(new \Zend\Authentication\Storage\Session());
+                    return $auth;
+                }
+            ),
+        );
+    }
+
+
     public function getAutoloaderConfig()
     {
         return array(

@@ -39,12 +39,44 @@ return array(
     'controllers' => array(
         'invokables' => array(
             'Auth\Controller\Account' => 'Auth\Controller\AccountController',
+            'Auth\Controller\Console' => 'Auth\Controller\ConsoleController',
             'Auth\Controller\Login' => 'Auth\Controller\LoginController',
         ),
     ),
     'view_manager' => array(
         'template_path_stack' => array(
             __DIR__ . '/../view',
+        ),
+    ),
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                 'console-create-user' => array(
+                    'options' => array(
+                        'route' => 'user create <email> <password>',
+                        'defaults' => array(
+                            'controller' => 'Auth\Controller\Console',
+                            'action' => 'create',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+    'doctrine' => array(
+        'driver' => array(
+            'auth_entities' => array(
+                'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
+                'cache' => 'array',
+                'paths' => array(
+                    __DIR__ . '/../src/Auth/Entity',
+                ),
+            ),
+            'orm_default' => array(
+                'drivers' => array(
+                    'Auth\Entity' => 'auth_entities'
+                ),
+            ),
         ),
     ),
 );

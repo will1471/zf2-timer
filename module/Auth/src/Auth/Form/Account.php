@@ -2,10 +2,15 @@
 
 namespace Auth\Form;
 
+use DoctrineModule\Validator\NoObjectExists;
+use Doctrine\Common\Persistence\ObjectRepository;
+
+
 class Account extends \Zend\Form\Form
 {
 
-    public function __construct($name = null, $options = array())
+
+    public function __construct(ObjectRepository $userRepository, $name = null, $options = array())
     {
         parent::__construct($name, $options);
 
@@ -16,7 +21,7 @@ class Account extends \Zend\Form\Form
         $this->add(
             array(
                 'type' => 'email',
-                'name' => 'username',
+                'name' => 'email',
                 'options' => array(
                     'label' => 'Email Address',
                 ),
@@ -26,6 +31,21 @@ class Account extends \Zend\Form\Form
                 )
             )
         );
+        $email = new \Zend\InputFilter\Input('email');
+        $email->setAllowEmpty(false);
+        $email->getValidatorChain()
+            ->attach(
+                new NoObjectExists(
+                    array(
+                        'object_repository' => $userRepository,
+                        'fields' => array('email'),
+                        'messages' => array(
+                            NoObjectExists::ERROR_OBJECT_FOUND => 'A user with this email already exists.',
+                        ),
+                    )
+                )
+            );
+        $inputFilter->add($email);
 
 
         $this->add(
@@ -74,7 +94,6 @@ class Account extends \Zend\Form\Form
             )
         );
         $inputFilter->add($password2);
-
 
 
         $this->add(

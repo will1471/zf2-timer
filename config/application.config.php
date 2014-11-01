@@ -4,6 +4,8 @@ return array(
     'modules' => array(
         'Application',
         'Auth',
+        'DoctrineModule',
+        'DoctrineORMModule',
         'ZfcTwig',
         'ZfcTwitterBootstrap',
     ),
