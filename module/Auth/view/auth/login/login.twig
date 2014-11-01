@@ -2,5 +2,9 @@
 
 {% block content %}
     <h1>Login</h1>
+    
+    {{ ztbForm(form) }}
+    
+    <a href="{{ url('create-account') }}">create account</a>
 {% endblock %}
 
