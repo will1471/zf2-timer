@@ -1,0 +1,41 @@
+---
+  - hosts: all
+    tasks:
+      - name: apt-get update
+        apt: update_cache=yes
+
+  - hosts: all
+  - include: mysql/mysql.yml
+    vars:
+      mysql_root_password: xy01Z
+      mysqld:
+        bind_address: 0.0.0.0
+        key_buffer: 16M
+        max_connection: 500
+        skip-archive: ~
+
+  - hosts: all
+    tasks:
+      - name: ensure apache2 installed
+        apt: pkg=apache2 state=latest
+
+      - name: enable mod_rewrite
+        raw: a2enmod rewrite
+
+      - name: ensure php5 installed
+        apt: pkg=php5 state=latest
+
+      - name: ensure php5=mysql installed
+        apt: pkg=php5-mysql state=latest
+
+      - name: ensure php5-curl installed
+        apt: pkg=php5-curl state=latest
+
+      - name: remove default apache host
+        file: path=/etc/apache2/sites-enabled/000-default.conf state=absent
+
+      - name: add apache host
+        copy: src=./apache-host dest=/etc/apache2/sites-enabled/host.conf
+
+      - service: name=apache2 state=restarted
+
