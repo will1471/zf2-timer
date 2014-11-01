@@ -3,6 +3,7 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.3.*",
         "zf-commons/zfc-twig": "dev-master",
-        "mwillbanks/zfc-twitter-bootstrap": "@dev"
+        "mwillbanks/zfc-twitter-bootstrap": "@dev",
+        "doctrine/doctrine-orm-module": "~0.8"
     }
 }
