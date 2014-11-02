@@ -3,4 +3,81 @@
 {% block content %}
     <h1>Hello, {{ user.email }}</h1>
     <a href="{{ url('logout') }}">logout</a>
+
+    <div id="timers"></div>
+    <div id="create-timer">
+        <input name="name" type="text" class="form-control" />
+        <button class="btn btn-default">Create</button>
+    </div>
+
+    <script src="/js/underscore-min.js"></script>
+    <script src="/js/backbone-min.js"></script>
+    <script>
+
+        var Timer = Backbone.Model.extend({
+            url: '/timer'
+        });
+
+        var TimerCollection = Backbone.Collection.extend({
+            model: Timer,
+            url: '/timer',
+            parse: function(response) {
+                this._links = response['_links'];
+                return response['_embedded']['timer'];
+            },
+            loadMore: function() {
+                if (this._links['self']['href'] === this._links['last']['href']) {
+                    return;
+                }
+                this.url = this._links['next']['href'];
+                this.fetch({'update': true, 'remove': false});
+            }
+        });
+
+        var TimerListItemView = Backbone.View.extend({
+            tagName: 'li',
+            render: function() {
+                this.$el.text(this.model.get('name'));
+                return this;
+            }
+        });
+
+        var TimerListView = Backbone.View.extend({
+            tagName: 'ul',
+
+            initialize: function() {
+                this.listenTo(this.collection, "change", this.render);
+                this.listenTo(this.collection, "sync", this.render);
+            },
+
+            render: function() {
+                this.$el.html('');
+                this.collection.each(this.addListItem, this);
+            },
+
+            addListItem: function(model) {
+                var view = new TimerListItemView({'model': model});
+                this.$el.append(view.render().el);
+            }
+
+        });
+
+        var timers = new TimerCollection();
+        var timersView = new TimerListView({el: $('#timers'), collection: timers});
+        timers.fetch();
+
+        $('#create-timer button').click(function() {
+            var timer = new Timer({'name': $(this).parent().find('input[name=name]').val()});
+            timer.save(null, {
+                'error': function() {
+                    alert('Error creating timer.');
+                    //window.location.reload();
+                },
+                'success': function(model) {
+                    projects.add(model);
+                }
+            });
+        });
+    </script>
+
 {% endblock content %}
