@@ -78,5 +78,16 @@ return array(
                 ),
             ),
         ),
+        'authentication' => array(
+            'orm_default' => array(
+                'object_manager' => 'Doctrine\ORM\EntityManager',
+                'identity_class' => 'Auth\Entity\User',
+                'identity_property' => 'email',
+                'credential_property' => 'password',
+                'credential_callable' => function(\Auth\Entity\User $user, $passwordGiven) {
+                    return password_verify($passwordGiven, $user->getPassword());
+                },
+            ),
+        ),
     ),
 );

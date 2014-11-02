@@ -19,11 +19,13 @@ class LoginController extends AbstractActionController
             $form->setData($this->getRequest()->getPost());
 
             if ($form->isValid())  {
-                $adaptor = $this->getAuthenticationAdapter();
+
+                $authService = $this->getAuthenticationService();
+                $adaptor = $authService->getAdapter();
                 $adaptor->setIdentity($form->getInputFilter()->get('email')->getValue());
                 $adaptor->setCredential($form->getInputFilter()->get('password')->getValue());
 
-                $result = $this->getAuthenticationService()->authenticate($adaptor);
+                $result = $authService->authenticate();
 
                 if ($result->isValid()) {
                     $this->redirect()->toRoute('home');
@@ -42,25 +44,6 @@ class LoginController extends AbstractActionController
         $this->getAuthenticationService()->clearIdentity();
 
         return $this->redirect()->toRoute('login');
-    }
-
-
-    /**
-     * @return \DoctrineModule\Authentication\Adapter\ObjectRepository
-     */
-    private function getAuthenticationAdapter()
-    {
-        return new \DoctrineModule\Authentication\Adapter\ObjectRepository(
-            array(
-                'object_manager' => $this->getEnttiyManager(),
-                'identity_class' => User::class,
-                'identity_property' => 'email',
-                'credential_property' => 'password',
-                'credential_callable' => function(User $user, $passwordGiven) {
-                    return password_verify($passwordGiven, $user->getPassword());
-                },
-            )
-        );
     }
 
 
