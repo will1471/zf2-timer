@@ -27,6 +27,10 @@ class User
      */
     protected $password;
 
+    /**
+     * @ORM\OneToMany(targetEntity="\Timer\Entity\Timer", mappedBy="user")
+     **/
+    protected $timers;
 
     /**
      * @return int
