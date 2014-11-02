@@ -46,3 +46,4 @@ vendor/
 .vagrant/
 
 
+config/development.config.php

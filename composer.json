@@ -1,9 +1,23 @@
 {
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/will1471/timer"
+        }
+    ],
     "require": {
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.3.*",
         "zf-commons/zfc-twig": "dev-master",
         "mwillbanks/zfc-twitter-bootstrap": "@dev",
-        "doctrine/doctrine-orm-module": "~0.8"
+        "doctrine/doctrine-orm-module": "~0.8",
+        "will1471/timer": "*",
+        "zfcampus/zf-apigility": "~1.0"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "zfcampus/zf-apigility-admin": "~1.0",
+        "zfcampus/zf-development-mode": "~2.0"
     }
 }
