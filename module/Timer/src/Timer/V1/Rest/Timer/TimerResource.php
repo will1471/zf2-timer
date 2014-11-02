@@ -1,11 +1,30 @@
 <?php
+
 namespace Timer\V1\Rest\Timer;
 
+use Timer\Service as TimerService;
 use ZF\ApiProblem\ApiProblem;
 use ZF\Rest\AbstractResourceListener;
+use Zend\Authentication\AuthenticationServiceInterface as AuthService;
+
 
 class TimerResource extends AbstractResourceListener
 {
+
+    private $authService;
+    private $timerService;
+
+
+    /**
+     * @param \Timer\Service $timerService
+     * @param \Zend\Authentication\AuthenticationServiceInterface $authService
+     */
+    public function __construct(TimerService $timerService, AuthService $authService)
+    {
+        $this->authService = $authService;
+        $this->timerService = $timerService;
+    }
+
     /**
      * Create a resource
      *
@@ -14,29 +33,7 @@ class TimerResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        return new ApiProblem(405, 'The POST method has not been defined');
-    }
-
-    /**
-     * Delete a resource
-     *
-     * @param  mixed $id
-     * @return ApiProblem|mixed
-     */
-    public function delete($id)
-    {
-        return new ApiProblem(405, 'The DELETE method has not been defined for individual resources');
-    }
-
-    /**
-     * Delete a collection, or members of a collection
-     *
-     * @param  mixed $data
-     * @return ApiProblem|mixed
-     */
-    public function deleteList($data)
-    {
-        return new ApiProblem(405, 'The DELETE method has not been defined for collections');
+        $this->timerService->createTimer($this->authService->getIdentity(), $data['name']);
     }
 
     /**
@@ -47,7 +44,11 @@ class TimerResource extends AbstractResourceListener
      */
     public function fetch($id)
     {
-        return new ApiProblem(405, 'The GET method has not been defined for individual resources');
+        $timer = $this->timerService->getTimer($this->authService->getIdentity(), $id);
+        return [
+            'id' => $timer->getId(),
+            'name' => $timer->getName(),
+        ];
     }
 
     /**
@@ -58,41 +59,17 @@ class TimerResource extends AbstractResourceListener
      */
     public function fetchAll($params = array())
     {
-        return new ApiProblem(405, 'The GET method has not been defined for collections');
+        $timers = $this->timerService->getTimers($this->authService->getIdentity());
+
+        $array = [];
+        foreach ($timers as $timer) {
+            $array[] = [
+                'id' => $timer->getId(),
+                'name' => $timer->getName()
+            ];
+        }
+
+        return new TimerCollection(new \Zend\Paginator\Adapter\ArrayAdapter($array));
     }
 
-    /**
-     * Patch (partial in-place update) a resource
-     *
-     * @param  mixed $id
-     * @param  mixed $data
-     * @return ApiProblem|mixed
-     */
-    public function patch($id, $data)
-    {
-        return new ApiProblem(405, 'The PATCH method has not been defined for individual resources');
-    }
-
-    /**
-     * Replace a collection or members of a collection
-     *
-     * @param  mixed $data
-     * @return ApiProblem|mixed
-     */
-    public function replaceList($data)
-    {
-        return new ApiProblem(405, 'The PUT method has not been defined for collections');
-    }
-
-    /**
-     * Update a resource
-     *
-     * @param  mixed $id
-     * @param  mixed $data
-     * @return ApiProblem|mixed
-     */
-    public function update($id, $data)
-    {
-        return new ApiProblem(405, 'The PUT method has not been defined for individual resources');
-    }
 }
