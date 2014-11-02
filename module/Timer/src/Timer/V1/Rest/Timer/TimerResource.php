@@ -33,7 +33,7 @@ class TimerResource extends AbstractResourceListener
      */
     public function create($data)
     {
-        $this->timerService->createTimer($this->authService->getIdentity(), $data['name']);
+        $this->timerService->createTimer($this->authService->getIdentity(), $data->name);
     }
 
     /**
