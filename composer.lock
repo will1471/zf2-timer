@@ -1207,12 +1207,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/will1471/timer.git",
-                "reference": "c2fedf850b007d1b9b4f7f8d8477593e6d5b5223"
+                "reference": "e0c22a19cd0a5a4852f47e6aa40620a6444838f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/will1471/timer/zipball/c2fedf850b007d1b9b4f7f8d8477593e6d5b5223",
-                "reference": "c2fedf850b007d1b9b4f7f8d8477593e6d5b5223",
+                "url": "https://api.github.com/repos/will1471/timer/zipball/e0c22a19cd0a5a4852f47e6aa40620a6444838f6",
+                "reference": "e0c22a19cd0a5a4852f47e6aa40620a6444838f6",
                 "shasum": ""
             },
             "require": {
@@ -1241,7 +1241,7 @@
                 "source": "https://github.com/will1471/timer/tree/master",
                 "issues": "https://github.com/will1471/timer/issues"
             },
-            "time": "2014-11-01 14:21:29"
+            "time": "2014-11-02 15:55:27"
         },
         {
             "name": "yohang/finite",
