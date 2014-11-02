@@ -105,4 +105,16 @@ class Timer
         return $this;
     }
 
+    /**
+     * @param \Timer\Entity\TimerEvent $timerEvent
+     *
+     * @return \Timer\Entity\Timer
+     */
+    public function addTimerEvent(TimerEvent $timerEvent)
+    {
+        $timerEvent->setTimer($this);
+        $this->timerEvents[] = $timerEvent;
+        return $this;
+    }
+
 }

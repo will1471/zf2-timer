@@ -1,5 +1,10 @@
 <?php
 return array(
+    'controllers' => array(
+        'invokables' => array(
+            'Timer\Controller\Rpc' => 'Timer\Controller\RpcController',
+        ),
+    ),
     'doctrine' => array(
         'driver' => array(
             'timer_entities' => array(
@@ -24,6 +29,19 @@ return array(
                     'route' => '/timer[/:timer_id]',
                     'defaults' => array(
                         'controller' => 'Timer\\V1\\Rest\\Timer\\Controller',
+                    ),
+                ),
+            ),
+            'timer-rpc' => array(
+                'type' => 'segment',
+                'options' => array(
+                    'route' => '/timer-rpc/:id',
+                    'constraints' => array(
+                        'id' => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        'controller' => 'Timer\Controller\Rpc',
+                        'action' => 'rpc',
                     ),
                 ),
             ),

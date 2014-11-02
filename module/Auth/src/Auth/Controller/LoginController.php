@@ -56,12 +56,4 @@ class LoginController extends AbstractActionController
     }
 
 
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    private function getEnttiyManager()
-    {
-        return $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
-    }
-
 }

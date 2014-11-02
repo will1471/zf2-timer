@@ -14,8 +14,62 @@
     <script src="/js/backbone-min.js"></script>
     <script>
 
+
         var Timer = Backbone.Model.extend({
-            url: '/timer'
+            url: '/timer',
+            rpc: function(method) {
+                var that = this;
+                $.ajax({
+                    type: 'POST',
+                    contentType: 'application/json',
+                    url: '/timer-rpc/' + this.get('id'),
+                    data: JSON.stringify({"method": method}),
+                    complete: function (jqXHR, textStatus ) {
+                        timers.fetch();
+                    }
+                });
+            },
+            start: function() {
+                this.rpc('start');
+            },
+            stop: function() {
+                this.rpc('stop');
+            },
+            pause: function() {
+                this.rpc('pause');
+            },
+            resume: function() {
+                this.rpc('resume');
+            },
+            elapsed: function() {
+                var events = this.get('events');
+
+                if (! events) {
+                    return 0;
+                }
+
+                var elapsed = 0;
+                var last = null;
+
+                for (var i = 0; i < events.length; i++) {
+                    var event = events[i];
+                    var eventTimestamp = Date.parse(event['datetime']['date']);
+                    if (! last) {
+                        last = eventTimestamp;
+                        continue;
+                    }
+
+                    elapsed = elapsed + ((eventTimestamp - last) / 1000);
+                    last = null;
+                }
+
+                if (last) {
+                    var now = new Date();
+                    elapsed = elapsed + ((now.getTime() - last) / 1000);
+                }
+
+                return parseInt(elapsed);
+            }
         });
 
         var TimerCollection = Backbone.Collection.extend({
@@ -36,11 +90,46 @@
 
         var TimerListItemView = Backbone.View.extend({
             tagName: 'li',
+            events: {
+                "click .start": "onStart",
+                "click .stop": "onStop",
+                "click .pause": "onPause",
+                "click .resume": "onResume"
+            },
+            initialize: function() {
+                this.listenTo(this.model, "change", this.render);
+                this.listenTo(this.model, "sync", this.render);
+            },
             render: function() {
                 this.$el.text(this.model.get('name'));
+                this.$el.append($('<a/>').text('start').addClass('start'));
+                this.$el.append($('<a/>').text('stop').addClass('stop'));
+                this.$el.append($('<a/>').text('pause').addClass('pause'));
+                this.$el.append($('<a/>').text('resume').addClass('resume'));
+
+                var time = $('<p/>');
+                time.text(this.model.elapsed());
+                this.$el.append(time);
+                setInterval(function() {
+                    time.text(this.model.elapsed());
+                }.bind(this), 500);
+
                 return this;
+            },
+            onStart: function() {
+                this.model.start();
+            },
+            onStop: function() {
+                this.model.stop();
+            },
+            onPause: function() {
+                this.model.pause();
+            },
+            onResume: function() {
+                this.model.resume();
             }
         });
+
 
         var TimerListView = Backbone.View.extend({
             tagName: 'ul',
@@ -66,6 +155,7 @@
         var timersView = new TimerListView({el: $('#timers'), collection: timers});
         timers.fetch();
 
+
         $('#create-timer button').click(function() {
             var timer = new Timer({'name': $(this).parent().find('input[name=name]').val()});
             timer.save(null, {
@@ -74,7 +164,7 @@
                     //window.location.reload();
                 },
                 'success': function(model) {
-                    projects.add(model);
+                    timers.add(model);
                 }
             });
         });

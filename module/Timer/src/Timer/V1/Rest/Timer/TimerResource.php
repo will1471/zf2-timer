@@ -63,9 +63,20 @@ class TimerResource extends AbstractResourceListener
 
         $array = [];
         foreach ($timers as $timer) {
+            
+            $events = [];
+
+            foreach ($timer->getTimerEvents() as $event) {
+                $events[] = [
+                    'type' => $event->getType(),
+                    'datetime' => $event->getDatetime(),
+                ];
+            }
+
             $array[] = [
                 'id' => $timer->getId(),
-                'name' => $timer->getName()
+                'name' => $timer->getName(),
+                'events' => $events,
             ];
         }
 
