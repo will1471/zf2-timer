@@ -32,7 +32,7 @@ class TimerResourceFactory
      */
     public function __invoke(ServiceLocatorInterface $services)
     {
-        $this->$services = $services;
+        $this->services = $services;
 
         return new TimerResource(
             $this->getTimerService(),

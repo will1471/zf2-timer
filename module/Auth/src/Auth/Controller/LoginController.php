@@ -25,7 +25,7 @@ class LoginController extends AbstractActionController
     {
         $form = new LoginForm();
 
-        if ($form->handelRequest($this->getRequest())->isValid()
+        if ($form->handleRequest($this->getRequest())->isValid()
             && $this->authenticate($form)->isValid()) {
 
             return $this->redirect()->toRoute('home');
@@ -49,7 +49,7 @@ class LoginController extends AbstractActionController
         $adaptor->setIdentity($form->getInputFilter()->get('email')->getValue());
         $adaptor->setCredential($form->getInputFilter()->get('password')->getValue());
 
-        return $adaptor->authenticate();
+        return $authService->authenticate($adaptor);
     }
 
 

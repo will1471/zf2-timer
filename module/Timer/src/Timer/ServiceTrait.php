@@ -1,6 +1,6 @@
 <?php
 
-namespace Auth;
+namespace Timer;
 
 trait ServiceTrait
 {

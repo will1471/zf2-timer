@@ -69,4 +69,18 @@ abstract class AbstractForm extends Form
         return $this;
     }
 
+
+    /**
+     * @return boolean
+     */
+    public function isValid()
+    {
+        // stop exceptions when data is not set.
+        if (! isset($this->data)) {
+            return false;
+        }
+
+        return parent::isValid();
+    }
+
 }
