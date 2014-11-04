@@ -21,10 +21,10 @@ Tested on Ubuntu 14.04 host.
 
 Install
 -------
-
+```sh
 git clone https://github.com/will1471/zf2-timer.git
 cd zf2-timer
 vagrant up
-
+```
 Navigate to http://192.168.1.200  in browser.
 
