@@ -1,173 +1,29 @@
 {% extends 'layout/layout.twig' %}
 
 {% block content %}
-    <h1>Hello, {{ user.email }}</h1>
-    <a href="{{ url('logout') }}">logout</a>
+    <div class="row">
+        <div class="col-lg-12">
+            <h1>Hello, {{ user.email }}</h1>
+            <a href="{{ url('logout') }}">logout</a>
+        </div>
 
-    <div id="timers"></div>
-    <div id="create-timer">
-        <input name="name" type="text" class="form-control" />
-        <button class="btn btn-default">Create</button>
+        <div class="col-lg-3">
+            <div id="create-timer">
+                <h2>Create new Timer</h2>
+                <input name="name" type="text" class="form-control" placeholder="Timer Name" />
+                <button class="btn btn-default">Create</button>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div id="timers"></div>
+        </div>
     </div>
+{% endblock %}
 
+
+{% block inline %}
     <script src="/js/underscore-min.js"></script>
     <script src="/js/backbone-min.js"></script>
-    <script>
-
-
-        var Timer = Backbone.Model.extend({
-            url: '/timer',
-            rpc: function(method) {
-                var that = this;
-                $.ajax({
-                    type: 'POST',
-                    contentType: 'application/json',
-                    url: '/timer-rpc/' + this.get('id'),
-                    data: JSON.stringify({"method": method}),
-                    complete: function (jqXHR, textStatus ) {
-                        timers.fetch();
-                    }
-                });
-            },
-            start: function() {
-                this.rpc('start');
-            },
-            stop: function() {
-                this.rpc('stop');
-            },
-            pause: function() {
-                this.rpc('pause');
-            },
-            resume: function() {
-                this.rpc('resume');
-            },
-            elapsed: function() {
-                var events = this.get('events');
-
-                if (! events) {
-                    return 0;
-                }
-
-                var elapsed = 0;
-                var last = null;
-
-                for (var i = 0; i < events.length; i++) {
-                    var event = events[i];
-                    var eventTimestamp = Date.parse(event['datetime']['date']);
-                    if (! last) {
-                        last = eventTimestamp;
-                        continue;
-                    }
-
-                    elapsed = elapsed + ((eventTimestamp - last) / 1000);
-                    last = null;
-                }
-
-                if (last) {
-                    var now = new Date();
-                    elapsed = elapsed + ((now.getTime() - last) / 1000);
-                }
-
-                return parseInt(elapsed);
-            }
-        });
-
-        var TimerCollection = Backbone.Collection.extend({
-            model: Timer,
-            url: '/timer',
-            parse: function(response) {
-                this._links = response['_links'];
-                return response['_embedded']['timer'];
-            },
-            loadMore: function() {
-                if (this._links['self']['href'] === this._links['last']['href']) {
-                    return;
-                }
-                this.url = this._links['next']['href'];
-                this.fetch({'update': true, 'remove': false});
-            }
-        });
-
-        var TimerListItemView = Backbone.View.extend({
-            tagName: 'li',
-            events: {
-                "click .start": "onStart",
-                "click .stop": "onStop",
-                "click .pause": "onPause",
-                "click .resume": "onResume"
-            },
-            initialize: function() {
-                this.listenTo(this.model, "change", this.render);
-                this.listenTo(this.model, "sync", this.render);
-            },
-            render: function() {
-                this.$el.text(this.model.get('name'));
-                this.$el.append($('<a/>').text('start').addClass('start'));
-                this.$el.append($('<a/>').text('stop').addClass('stop'));
-                this.$el.append($('<a/>').text('pause').addClass('pause'));
-                this.$el.append($('<a/>').text('resume').addClass('resume'));
-
-                var time = $('<p/>');
-                time.text(this.model.elapsed());
-                this.$el.append(time);
-                setInterval(function() {
-                    time.text(this.model.elapsed());
-                }.bind(this), 500);
-
-                return this;
-            },
-            onStart: function() {
-                this.model.start();
-            },
-            onStop: function() {
-                this.model.stop();
-            },
-            onPause: function() {
-                this.model.pause();
-            },
-            onResume: function() {
-                this.model.resume();
-            }
-        });
-
-
-        var TimerListView = Backbone.View.extend({
-            tagName: 'ul',
-
-            initialize: function() {
-                this.listenTo(this.collection, "change", this.render);
-                this.listenTo(this.collection, "sync", this.render);
-            },
-
-            render: function() {
-                this.$el.html('');
-                this.collection.each(this.addListItem, this);
-            },
-
-            addListItem: function(model) {
-                var view = new TimerListItemView({'model': model});
-                this.$el.append(view.render().el);
-            }
-
-        });
-
-        var timers = new TimerCollection();
-        var timersView = new TimerListView({el: $('#timers'), collection: timers});
-        timers.fetch();
-
-
-        $('#create-timer button').click(function() {
-            var timer = new Timer({'name': $(this).parent().find('input[name=name]').val()});
-            timer.save(null, {
-                'error': function() {
-                    alert('Error creating timer.');
-                    //window.location.reload();
-                },
-                'success': function(model) {
-                    timers.add(model);
-                }
-            });
-        });
-    </script>
-
-{% endblock content %}
+    <script src="/js/timer.js"></script>
+{% endblock %}
