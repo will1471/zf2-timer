@@ -55,7 +55,7 @@ class UserService
      */
     public function getUniqueUsernameValidator($message = 'A user with this email already exists.')
     {
-        return new \DoctrineModule\Validator\NoObjectExists(
+        return new NoObjectExists(
             array(
                 'object_repository' => $this->om->getRepository(User::class),
                 'fields' => array('email'),
