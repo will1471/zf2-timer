@@ -39,8 +39,8 @@ var Timer = Backbone.Model.extend({
 
         for (var i = 0; i < events.length; i++) {
             var event = events[i];
-            var eventTimestamp = Date.parse(event['datetime']['date']);
-            if (! last) {
+            var eventTimestamp = Date.parse(event['datetime']);
+            if (last === null) {
                 last = eventTimestamp;
                 continue;
             }

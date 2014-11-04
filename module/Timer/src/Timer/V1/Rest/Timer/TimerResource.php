@@ -69,7 +69,7 @@ class TimerResource extends AbstractResourceListener
             foreach ($timer->getTimerEvents() as $event) {
                 $events[] = [
                     'type' => $event->getType(),
-                    'datetime' => $event->getDatetime(),
+                    'datetime' => $event->getDatetime()->format('c')
                 ];
             }
 
