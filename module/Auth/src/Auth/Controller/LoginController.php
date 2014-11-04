@@ -2,7 +2,6 @@
 
 namespace Auth\Controller;
 
-use Auth\Entity\User;
 use Auth\Form\Login as LoginForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -11,26 +10,25 @@ use Zend\View\Model\ViewModel;
 class LoginController extends AbstractActionController
 {
 
+    /**
+     * Provides getAuthenticationService()
+     */
+    use \Auth\ServiceTrait;
+
+
+    /**
+     * Login Action (route: /login)
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function loginAction()
     {
         $form = new LoginForm();
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
+        if ($form->handelRequest($this->getRequest())->isValid()
+            && $this->authenticate($form)->isValid()) {
 
-            if ($form->isValid())  {
-
-                $authService = $this->getAuthenticationService();
-                $adaptor = $authService->getAdapter();
-                $adaptor->setIdentity($form->getInputFilter()->get('email')->getValue());
-                $adaptor->setCredential($form->getInputFilter()->get('password')->getValue());
-
-                $result = $authService->authenticate();
-
-                if ($result->isValid()) {
-                    $this->redirect()->toRoute('home');
-                }
-            }
+            return $this->redirect()->toRoute('home');
         }
 
         return new ViewModel(array(
@@ -39,21 +37,32 @@ class LoginController extends AbstractActionController
     }
 
 
+    /**
+     * @param \Auth\Form\Login $form
+     *
+     * @return \Zend\Authentication\Result
+     */
+    private function authenticate(LoginForm $form)
+    {
+        $authService = $this->getAuthenticationService();
+        $adaptor = $authService->getAdapter();
+        $adaptor->setIdentity($form->getInputFilter()->get('email')->getValue());
+        $adaptor->setCredential($form->getInputFilter()->get('password')->getValue());
+
+        return $adaptor->authenticate();
+    }
+
+
+    /**
+     * Login Action (route: /logout)
+     *
+     * @return \Zend\Http\Response
+     */
     public function logoutAction()
     {
         $this->getAuthenticationService()->clearIdentity();
 
         return $this->redirect()->toRoute('login');
     }
-
-
-    /**
-     * @return \Zend\Authentication\AuthenticationService
-     */
-    public function getAuthenticationService()
-    {
-        return $this->getServiceLocator()->get('authentication-service');
-    }
-
 
 }

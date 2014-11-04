@@ -9,6 +9,17 @@ use Zend\View\Model\ViewModel;
 class IndexController extends AbstractActionController
 {
 
+    /**
+     * Provides getAuthenticationService()
+     */
+    use \Auth\ServiceTrait;
+
+
+    /**
+     * Index Action (route: /)
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function indexAction()
     {
         if (! $this->getAuthenticationService()->hasIdentity()) {
@@ -16,15 +27,6 @@ class IndexController extends AbstractActionController
         }
 
         return new ViewModel(array('user' => $this->getAuthenticationService()->getIdentity()));
-    }
-
-
-    /**
-     * @return \Zend\Authentication\AuthenticationService
-     */
-    public function getAuthenticationService()
-    {
-        return $this->getServiceLocator()->get('authentication-service');
     }
 
 }

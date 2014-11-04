@@ -17,7 +17,12 @@ class Module
             'factories' => array(
                 'authentication-service' => function($sm) {
                     return $sm->get('doctrine.authenticationservice.orm_default');
-                }
+                },
+
+                'user-service' => function($sm) {
+                    return new UserService($sm->get('Doctrine\ORM\EntityManager'));
+                },
+
             ),
         );
     }

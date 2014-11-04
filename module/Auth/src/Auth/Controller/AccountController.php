@@ -10,39 +10,38 @@ use Zend\View\Model\ViewModel;
 class AccountController extends AbstractActionController
 {
 
+    /**
+     * Provides getUserService()
+     */
+    use \Auth\ServiceTrait;
+
+
+    /**
+     * Create Account Action (route: /create-account)
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
     public function createAction()
     {
-        $form = new AccountForm($this->getEntityManager()->getRepository(User::class));
+        $form = new AccountForm($this->getUserService());
 
-        if ($this->getRequest()->isPost()) {
-            $form->setData($this->getRequest()->getPost());
-            if ($form->isValid()) {
+        if ($form->handleRequest($this->getRequest())->isValid()) {
 
-                $user = new User();
-                $user->setEmail($form->getInputFilter()->get('email')->getValue());
-                $user->setPassword(password_hash($form->getInputFilter()->get('password')->getValue(), PASSWORD_BCRYPT));
-                $this->getEntityManager()->persist($user);
+            try {
+                $this->getUserService()
+                    ->createUser(
+                        $form->getInputFilter()->get('email')->getValue(),
+                        $form->getInputFilter()->get('password')->getValue()
+                    );
+                return $this->redirect()->toRoute('login');
 
-                try {
-                    $this->getEntityManager()->flush();
-                    return $this->redirect()->toRoute('login');
-
-                } catch (\Exception $e) {
-                    die($e->getMessage());
-                }
+            } catch (\Exception $e) {
+                // should handle exceptions better, flash messager for example.
+                die($e->getMessage());
             }
         }
 
         return new ViewModel(array('form' => $form));
-    }
-
-
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    private function getEntityManager()
-    {
-        return $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     }
 
 }

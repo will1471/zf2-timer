@@ -2,21 +2,28 @@
 
 namespace Auth\Form;
 
-use DoctrineModule\Validator\NoObjectExists;
-use Doctrine\Common\Persistence\ObjectRepository;
+use Auth\UserService;
+use Zend\InputFilter\Input;
+use Zend\InputFilter\InputFilter;
 
 
-class Account extends \Zend\Form\Form
+/**
+ * Form used when creating new accounts.
+ */
+class Account extends AbstractForm
 {
 
 
-    public function __construct(ObjectRepository $userRepository, $name = null, $options = array())
+    /**
+     * @param \Auth\UserService $userService
+     */
+    public function __construct(UserService $userService)
     {
-        parent::__construct($name, $options);
+        parent::__construct();
 
         $this->setAttribute('method', 'post');
 
-        $inputFilter = new \Zend\InputFilter\InputFilter();
+        $inputFilter = new InputFilter();
 
         $this->add(
             array(
@@ -31,20 +38,16 @@ class Account extends \Zend\Form\Form
                 )
             )
         );
-        $email = new \Zend\InputFilter\Input('email');
+        $email = new Input('email');
         $email->setAllowEmpty(false);
+
+        /*
+         * It could be considered bad practice to have the form validation
+         * make calls to the database.
+         */
         $email->getValidatorChain()
-            ->attach(
-                new NoObjectExists(
-                    array(
-                        'object_repository' => $userRepository,
-                        'fields' => array('email'),
-                        'messages' => array(
-                            NoObjectExists::ERROR_OBJECT_FOUND => 'A user with this email already exists.',
-                        ),
-                    )
-                )
-            );
+            ->attach($userService->getUniqueUsernameValidator());
+
         $inputFilter->add($email);
 
 
@@ -61,7 +64,7 @@ class Account extends \Zend\Form\Form
                 )
             )
         );
-        $password = new \Zend\InputFilter\Input('password');
+        $password = new Input('password');
         $password->setAllowEmpty(false);
         $inputFilter->add($password);
 
@@ -81,18 +84,19 @@ class Account extends \Zend\Form\Form
         );
         $password2 = new \Zend\InputFilter\Input('password_repeat');
         $password2->setAllowEmpty(false);
-        $password2->getValidatorChain()->addValidator(
-            new \Zend\Validator\Callback(
-                array(
-                    'messages' => array(
-                        \Zend\Validator\Callback::INVALID_VALUE => 'The passwords do not match.',
-                    ),
-                    'callback' => function($value, $context = array()) {
-                        return $value == $context['password'];
-                    }
+        $password2->getValidatorChain()
+            ->attach(
+                new \Zend\Validator\Callback(
+                    array(
+                        'messages' => array(
+                            \Zend\Validator\Callback::INVALID_VALUE => 'The passwords do not match.',
+                        ),
+                        'callback' => function($value, $context = array()) {
+                            return $value == $context['password'];
+                        }
+                    )
                 )
-            )
-        );
+            );
         $inputFilter->add($password2);
 
 

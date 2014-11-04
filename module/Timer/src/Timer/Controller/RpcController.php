@@ -8,6 +8,22 @@ namespace Timer\Controller;
 class RpcController extends \Zend\Mvc\Controller\AbstractActionController
 {
 
+    /**
+     * Provides getAuthenticationService()
+     */
+    use \Auth\ServiceTrait;
+
+    /**
+     * Provides getTimerService()
+     */
+    use \Timer\ServiceTrait;
+
+
+    /**
+     * JSON-RPC service to allow JS to call methods on the Timer objects.
+     *
+     * @return \Zend\Http\Response
+     */
     public function rpcAction()
     {
         $timer = $this->getTimerService()->getTimer(
@@ -34,28 +50,11 @@ class RpcController extends \Zend\Mvc\Controller\AbstractActionController
 
 
     /**
-     * @return \Zend\Authentication\AuthenticationService
-     */
-    public function getAuthenticationService()
-    {
-        return $this->getServiceLocator()->get('authentication-service');
-    }
-
-
-    /**
-     * @return \Timer\Service
-     */
-    private function getTimerService()
-    {
-        return $this->getServiceLocator()->get('timer-service');
-    }
-
-
-    /**
      * @return \Doctrine\ORM\EntityManager
      */
     private function getEntityManager()
     {
         return $this->getServiceLocator()->get('Doctrine\ORM\EntityManager');
     }
+
 }

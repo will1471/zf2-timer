@@ -2,15 +2,17 @@
 
 namespace Auth\Form;
 
-use Zend\Form\Form;
 
-class Login extends Form
+/**
+ * Form used when user logs in.
+ */
+class Login extends AbstractForm
 {
 
 
-    public function __construct($name = null, $options = array())
+    public function __construct()
     {
-        parent::__construct($name, $options);
+        parent::__construct();
 
         $this->setAttribute('method', 'post');
 
