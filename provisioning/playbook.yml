@@ -39,3 +39,20 @@
 
       - service: name=apache2 state=restarted
 
+      - name: install python-mysqldb
+        apt: pkg=python-mysqldb state=latest
+
+      - name: create database
+        mysql_db: login_password=xy01Z login_user=root name=timer state=present
+
+      - name: install composer
+        raw: "cd /tmp && curl -sS https://getcomposer.org/installer | php && mv /tmp/composer.phar /usr/local/bin/composer"
+
+      - name: composer install
+        composer: working_dir=/vagrant no_dev=no
+
+      - name: app config
+        raw: "cp /vagrant/config/autoload/local.php.dist /vagrant/config/autoload/local.php"
+
+      - name: install database
+        raw: "php /vagrant/vendor/bin/doctrine-module orm:schema-tool:create"
